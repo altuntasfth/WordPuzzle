@@ -301,12 +301,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81162b1f065b6495fa60a4b41b50814c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelInfoTMP: {fileID: 0}
-  highScoreTMP: {fileID: 0}
-  playButton: {fileID: 0}
-  playButtonTMP: {fileID: 0}
-  enabledPlayButtonSprite: {fileID: 0}
-  disabledPlayButtonSprite: {fileID: 0}
+  levelData:
+    levelUIData:
+      levelIndex: 0
+      isReadyToPlay: 0
+      highScore: 0
+    levelJsonData:
+      title: 
+      tiles: []
+  levelInfoTMP: {fileID: 3300745668133174288}
+  highScoreTMP: {fileID: 3300745668243241283}
+  playButton: {fileID: 3300745667773436479}
+  playButtonTMP: {fileID: 3300745666305681331}
+  enabledPlayButtonSprite: {fileID: 21300000, guid: 48def4f100e254c2bb8ebb4d9f7af331, type: 3}
+  disabledPlayButtonSprite: {fileID: 21300000, guid: c80397e865ffc44b0ad1ceefd71deab1, type: 3}
 --- !u!1 &3300745667773436477
 GameObject:
   m_ObjectHideFlags: 0
