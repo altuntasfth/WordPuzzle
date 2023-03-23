@@ -1,6 +1,7 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace __Game.Scripts
 {
@@ -26,7 +27,7 @@ namespace __Game.Scripts
             Debug.Log(path);
         }
         
-        public AllLevelsData Load()
+        public AllLevelsData LoadAllLevelsData()
         {
             AllLevelsData allLevelsData = null;
             
@@ -51,6 +52,16 @@ namespace __Game.Scripts
             file.Close();
             
             Debug.Log("Initialize Data");
+        }
+        
+        public void ClearData()
+        {
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+
+            SceneManager.LoadScene("MenuScene");
         }
         
         private string DataPath()

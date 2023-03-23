@@ -13,6 +13,7 @@ public class LevelUIManager : MonoBehaviour
     [SerializeField] private Transform levelUIContentParent;
     [SerializeField] private GameObject levelUIPrefab;
     [SerializeField] private Button levelsButton;
+    [SerializeField] private Button clearButton;
 
     private void Awake()
     {
@@ -20,6 +21,7 @@ public class LevelUIManager : MonoBehaviour
         CreateLevelUIs();
         
         levelsButton.onClick.AddListener(OnLevelsButton);
+        clearButton.onClick.AddListener(LevelSaveLoadManager.Instance.ClearData);
     }
 
     private void OnLevelsButton()
@@ -30,7 +32,7 @@ public class LevelUIManager : MonoBehaviour
 
     private void CreateLevelUIs()
     {
-        AllLevelsData data = LevelSaveLoadManager.Instance.Load();
+        AllLevelsData data = LevelSaveLoadManager.Instance.LoadAllLevelsData();
         
         for (var i = 0; i < baseLevelData.levelsDataList.Count; i++)
         {
@@ -44,7 +46,7 @@ public class LevelUIManager : MonoBehaviour
 
     private void InitializeLevelsData()
     {
-        AllLevelsData data = LevelSaveLoadManager.Instance.Load();
+        AllLevelsData data = LevelSaveLoadManager.Instance.LoadAllLevelsData();
         if (data == null)
         {
             Debug.Log("Data == null");

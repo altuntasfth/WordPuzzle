@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using __Game.Scripts;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
@@ -41,5 +42,16 @@ public class LevelUIEntity : MonoBehaviour
         playButton.GetComponent<Image>().sprite =
             levelData.levelUIData.isReadyToPlay == true ? enabledPlayButtonSprite : disabledPlayButtonSprite;
         playButtonTMP.text = levelData.levelUIData.isReadyToPlay == true ? "PLAY" : "LOCKED";
+        
+        if (levelData.levelUIData.isReadyToPlay)
+        {
+            playButton.onClick.AddListener(() =>
+            {
+                PlayerPrefs.SetInt("ActiveLevelIndex", levelData.levelUIData.levelIndex);
+                PlayerPrefs.Save();
+                
+                SceneManager.LoadScene("GameplayScene");
+            });
+        }
     }
 }

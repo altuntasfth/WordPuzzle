@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace __Game.Scripts
 {
@@ -35,11 +36,11 @@ namespace __Game.Scripts
     public class LevelJsonData
     {
         public string title;
-        public Tile[] tiles;
+        public TileData[] tiles;
     }
 
     [Serializable]
-    public class Tile
+    public class TileData
     {
         public int id;
         public Position position;
@@ -53,5 +54,11 @@ namespace __Game.Scripts
         public float x;
         public float y;
         public float z;
+    }
+    
+    [Serializable]
+    public class WordTiles
+    {
+        public List<TileEntity> tiles;
     }
 }
