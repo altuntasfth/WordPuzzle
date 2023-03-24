@@ -27,6 +27,9 @@ namespace __Game.Scripts
         [SerializeField] private TextMeshProUGUI scoreTMP;
         [SerializeField] private TextMeshProUGUI titleTMP;
         [SerializeField] private TextMeshProUGUI wordScoreTMP;
+        [SerializeField] private TextMeshProUGUI highScoreTMP;
+        [SerializeField] private GameObject celebrationScreen;
+        [SerializeField] private GameObject gameplayScreen;
         [SerializeField] private Button submitButton;
         [SerializeField] private Button undoButton;
         
@@ -148,6 +151,11 @@ namespace __Game.Scripts
                 return;
             }
             
+            highScoreTMP.text = "HIGH SCORE\n" + totalScore.ToString();
+            gameplayScreen.SetActive(false);
+            tileManager.gameObject.SetActive(false);
+            celebrationScreen.SetActive(true);
+            
             levelData.levelUIData.highScore = totalScore;
             LevelSaveLoadManager.Instance.Save(data, levelData, levelIndex);
         }
@@ -189,9 +197,9 @@ namespace __Game.Scripts
             {
                 SaveCompletedLevelData();
                 SetReadyToPlayNextLevel();
-                
+
                 DOTween.KillAll();
-                SceneManager.LoadScene("MenuScene");
+                DOVirtual.DelayedCall(2f, () => SceneManager.LoadScene("MenuScene"));
             }
         }
     }
