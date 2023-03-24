@@ -14,12 +14,12 @@ namespace __Game.Scripts
         public Camera mainCamera;
         public bool isGameStarted;
         public bool isGameOver;
+        [SerializeField] private LevelData levelData;
         
         [Space(10)] [Header("Managers")]
         [SerializeField] private TileManager tileManager;
-        [SerializeField] private WordGridManager wordGridManager;
+        [SerializeField] private WordSearchManager wordSearchManager;
         [SerializeField] private PlayerManager playerManager;
-        [SerializeField] private LevelData levelData;
         [SerializeField] private UndoButtonLongPressListener undoButtonLongPressListener;
 
         [Space(10)] [Header("UI")]
@@ -62,6 +62,9 @@ namespace __Game.Scripts
             {
                 tileManager.RemoveCompletedTiles();
                 tileManager.SetTilesVisibility();
+                wordSearchManager.SaveCompletedWord();
+                wordSearchManager.WriteCompletedWord();
+                wordSearchManager.ResetWordGrids();
                 
                 SetSubmitButtonActivate();
             });
@@ -87,7 +90,7 @@ namespace __Game.Scripts
 
         public void SetSubmitButtonActivate()
         {
-            if (wordGridManager.IsWordComplete())
+            if (wordSearchManager.IsWordComplete())
             {
                 submitButton.GetComponent<Image>().color = Color.green;
                 submitButton.interactable = true;
@@ -110,12 +113,12 @@ namespace __Game.Scripts
         {
             if (isUndoActive)
             {
-                for (var i = wordGridManager.wordGrids.Count - 1; i > -1; i--)
+                for (var i = wordSearchManager.wordGrids.Count - 1; i > -1; i--)
                 {
-                    TileEntity lastTile = wordGridManager.wordGrids[i].tile;
+                    TileEntity lastTile = wordSearchManager.wordGrids[i].tile;
                     if (lastTile != null)
                     {
-                        wordGridManager.wordGrids[i].ResetGrid();
+                        wordSearchManager.wordGrids[i].ResetGrid();
                         lastTile.UndoMove();
 
                         if (!isLongPress)

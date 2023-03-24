@@ -9,12 +9,11 @@ namespace __Game.Scripts
     public class TileManager : MonoBehaviour
     {
         public GameManager gameManager;
-        public WordGridManager wordGridManager;
+        public WordSearchManager wordSearchManager;
         public LevelJsonData levelJsonData;
         
         [SerializeField] private GameObject tilePrefab;
         public List<TileEntity> tiles;
-        public List<TileEntity> initialTileList;
 
         public void SetupTiles()
         {
@@ -23,8 +22,6 @@ namespace __Game.Scripts
             GenerateTiles();
             SetChildrenAndParentTiles();
             SetTilesVisibility();
-
-            initialTileList = tiles;
         }
 
         private void GenerateTiles()
@@ -83,23 +80,21 @@ namespace __Game.Scripts
 
         public void RemoveCompletedTiles()
         {
-            for (var i = 0; i < wordGridManager.wordGrids.Count; i++)
+            for (var i = 0; i < wordSearchManager.wordGrids.Count; i++)
             {
-                TileEntity completedTile = wordGridManager.wordGrids[i].tile;
+                TileEntity completedTile = wordSearchManager.wordGrids[i].tile;
                 tiles.Remove(completedTile);
             }
         }
 
         public void OnTileMove(TileEntity tile)
         {
-            for (var i = 0; i < wordGridManager.wordGrids.Count; i++)
+            for (var i = 0; i < wordSearchManager.wordGrids.Count; i++)
             {
-                WordGridEntity wordGridEntity = wordGridManager.wordGrids[i];
+                WordGridEntity wordGridEntity = wordSearchManager.wordGrids[i];
 
                 if (wordGridEntity.tile == null)
                 {
-                    //tile.transform.DOMove(wordGridEntity.GetComponent<RectTransform>().anchoredPosition, 1f);
-                    
                     wordGridEntity.tile = tile;
                     wordGridEntity.GetComponent<Image>().color = tile.visibleColor;
                     wordGridEntity.letterTMP.text = tile.tileData.character;
