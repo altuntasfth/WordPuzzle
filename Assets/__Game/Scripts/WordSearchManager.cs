@@ -90,6 +90,25 @@ namespace __Game.Scripts
             completedWords.Add(GetCompletedWord());
         }
 
+        public int GetWordScore()
+        {
+            int wordScore = 0;
+
+            for (int i = 0; i < wordGrids.Count; i++)
+            {
+                if (wordGrids[i].tile != null)
+                {
+                    wordScore += wordGrids[i].tile.value;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return wordScore * GetCompletedWord().Length * 10;
+        }
+
         public void ResetWordGrids()
         {
             for (int i = 0; i < wordGrids.Count; i++)

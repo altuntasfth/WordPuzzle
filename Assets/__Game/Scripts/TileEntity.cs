@@ -6,6 +6,7 @@ namespace __Game.Scripts
 {
     public class TileEntity : MonoBehaviour
     {
+        public int value;
         public TileData tileData;
         public List<TileEntity> childrenTiles;
         public List<TileEntity> parentTiles;

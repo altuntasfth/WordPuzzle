@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 using Image = UnityEngine.UI.Image;
@@ -15,10 +16,26 @@ namespace __Game.Scripts
         [SerializeField] private GameObject tilePrefab;
         public List<TileEntity> tiles;
 
+        private List<string> letters = new List<string>()
+        {
+            "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+            "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
+        };
+
+        private List<string> twoPoints = new List<string>() { "D", "G" };
+        private List<string> threePoints = new List<string>() { "B", "C", "M", "P" };
+        private List<string> fourPoints = new List<string>() { "F", "H", "V", "W", "Y" };
+        private List<string> fivePoints = new List<string>() { "K" };
+        private List<string> eightPoints = new List<string>() { "J", "X" };
+        private List<string> tenPoints = new List<string>() { "Q", "Z" };
+        
+        private Dictionary<string, int> lettersWithValues = new Dictionary<string, int>();
+
         public void SetupTiles()
         {
             tiles = new List<TileEntity>();
-            
+            SetLetterValues();
+
             GenerateTiles();
             SetChildrenAndParentTiles();
             SetTilesVisibility();
@@ -33,9 +50,50 @@ namespace __Game.Scripts
                                        levelJsonData.tiles[i].position.z * Vector3.forward;
                 TileEntity tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity, this.transform).GetComponent<TileEntity>();
                 tile.tileData = levelJsonData.tiles[i];
-                tile.Initialize();
                 
+                int value = 0;
+                lettersWithValues.TryGetValue(tile.tileData.character, out value);
+                tile.value = value;
+                
+                tile.Initialize();
+
                 tiles.Add(tile);
+            }
+        }
+
+        private void SetLetterValues()
+        {
+            for (var i = 0; i < letters.Count(); i++)
+            {
+                int value = 1;
+                string letter = letters[i];
+
+                if (twoPoints.Contains(letter))
+                {
+                    value = 2;
+                }
+                else if (threePoints.Contains(letter))
+                {
+                    value = 3;
+                }
+                else if (fourPoints.Contains(letter))
+                {
+                    value = 4;
+                }
+                else if (fivePoints.Contains(letter))
+                {
+                    value = 5;
+                }
+                else if (eightPoints.Contains(letter))
+                {
+                    value = 8;
+                }
+                else if (tenPoints.Contains(letter))
+                {
+                    value = 10;
+                }
+                
+                lettersWithValues.Add(letter, value);
             }
         }
 

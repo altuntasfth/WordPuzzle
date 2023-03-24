@@ -14,6 +14,7 @@ namespace __Game.Scripts
         public Camera mainCamera;
         public bool isGameStarted;
         public bool isGameOver;
+        public int totalScore;
         [SerializeField] private LevelData levelData;
         
         [Space(10)] [Header("Managers")]
@@ -25,6 +26,7 @@ namespace __Game.Scripts
         [Space(10)] [Header("UI")]
         [SerializeField] private TextMeshProUGUI scoreTMP;
         [SerializeField] private TextMeshProUGUI titleTMP;
+        [SerializeField] private TextMeshProUGUI wordScoreTMP;
         [SerializeField] private Button submitButton;
         [SerializeField] private Button undoButton;
         
@@ -60,6 +62,9 @@ namespace __Game.Scripts
 
             submitButton.onClick.AddListener(() =>
             {
+                totalScore += wordSearchManager.GetWordScore();
+                scoreTMP.text = "Score: " + totalScore.ToString();
+                
                 tileManager.RemoveCompletedTiles();
                 tileManager.SetTilesVisibility();
                 wordSearchManager.SaveCompletedWord();
@@ -94,11 +99,15 @@ namespace __Game.Scripts
             {
                 submitButton.GetComponent<Image>().color = Color.green;
                 submitButton.interactable = true;
+
+                wordScoreTMP.text = "Word Score: " + wordSearchManager.GetWordScore().ToString();
             }
             else
             {
                 submitButton.GetComponent<Image>().color = Color.white;
                 submitButton.interactable = false;
+
+                wordScoreTMP.text = "";
             }
         }
 
@@ -131,6 +140,30 @@ namespace __Game.Scripts
                 SetUndoButtonActivate(false);
             }
         }
+        
+        private void SaveCompletedLevelData()
+        {
+            if (levelData.levelUIData.highScore > totalScore)
+            {
+                return;
+            }
+            
+            levelData.levelUIData.highScore = totalScore;
+            LevelSaveLoadManager.Instance.Save(data, levelData, levelIndex);
+        }
+        
+        private void SetReadyToPlayNextLevel()
+        {
+            int nextLevelIndex = levelIndex + 1;
+            LevelData nextLevelData = data.allLevelsData[nextLevelIndex];
+            
+            if (nextLevelIndex < data.allLevelsData.Count && nextLevelData.levelUIData.highScore == -1)
+            {
+                nextLevelData.levelUIData.highScore = 0;
+                nextLevelData.levelUIData.isReadyToPlay = true;
+                LevelSaveLoadManager.Instance.Save(data, nextLevelData, nextLevelIndex);
+            }
+        }
 
         private void DebugControl()
         {
@@ -150,6 +183,15 @@ namespace __Game.Scripts
                 PlayerPrefs.Save();
                 DOTween.KillAll();
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
+
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                SaveCompletedLevelData();
+                SetReadyToPlayNextLevel();
+                
+                DOTween.KillAll();
+                SceneManager.LoadScene("MenuScene");
             }
         }
     }

@@ -24,7 +24,24 @@ namespace __Game.Scripts
             }
 
             path = DataPath();
-            Debug.Log(path);
+        }
+        
+        public void Save(AllLevelsData data, LevelData levelData, int levelNumber)
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            FileStream file = File.Create(path);
+
+            if (levelNumber < data.allLevelsData.Count)
+            {
+                data.allLevelsData[levelNumber] = levelData;
+            }
+            else
+            {
+                data.allLevelsData.Add(levelData);
+            }
+            
+            bf.Serialize(file, data);
+            file.Close();
         }
         
         public AllLevelsData LoadAllLevelsData()
