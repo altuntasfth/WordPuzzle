@@ -1,4 +1,5 @@
 using System;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -34,12 +35,13 @@ namespace __Game.Scripts
         private void OnEnable()
         {
             playerManager.MoveTile += tileManager.OnTileMove;
-            undoButtonLongPressListener.onLongPress.AddListener(UndoAllWord);
+            undoButtonLongPressListener.onLongPress += UndoMove;
         }
 
         private void OnDestroy()
         {
             playerManager.MoveTile -= tileManager.OnTileMove;
+            undoButtonLongPressListener.onLongPress -= UndoMove;
         }
 
         private void Awake()
@@ -60,14 +62,13 @@ namespace __Game.Scripts
             {
                 tileManager.RemoveCompletedTiles();
                 tileManager.SetTilesVisibility();
-                wordGridManager.GenerateWordGridArea();
                 
                 SetSubmitButtonActivate();
             });
             
             undoButton.onClick.AddListener(() =>
             {
-                UndoLastMove();
+                UndoMove(false);
                 SetSubmitButtonActivate();
             });
 
@@ -77,7 +78,6 @@ namespace __Game.Scripts
         private void Start()
         {
             tileManager.SetupTiles();
-            wordGridManager.Initialize();
         }
         
         private void Update()
@@ -106,7 +106,7 @@ namespace __Game.Scripts
             undoButton.GetComponent<Image>().color = isActive ? Color.blue : Color.gray;
         }
         
-        private void UndoLastMove()
+        private void UndoMove(bool isLongPress)
         {
             if (isUndoActive)
             {
@@ -116,27 +116,12 @@ namespace __Game.Scripts
                     if (lastTile != null)
                     {
                         wordGridManager.wordGrids[i].ResetGrid();
-                        lastTile.gameObject.SetActive(true);
-                        
-                        break;
-                    }
-                }
-                
-                SetUndoButtonActivate(false);
-            }
-        }
-        
-        public void UndoAllWord()
-        {
-            if (isUndoActive)
-            {
-                for (var i = wordGridManager.wordGrids.Count - 1; i > -1; i--)
-                {
-                    TileEntity lastTile = wordGridManager.wordGrids[i].tile;
-                    if (lastTile != null)
-                    {
-                        wordGridManager.wordGrids[i].ResetGrid();
-                        lastTile.gameObject.SetActive(true);
+                        lastTile.UndoMove();
+
+                        if (!isLongPress)
+                        {
+                            break;
+                        }
                     }
                 }
                 
@@ -151,7 +136,7 @@ namespace __Game.Scripts
                 levelIndex = PlayerPrefs.GetInt("ActiveLevelIndex");
                 PlayerPrefs.SetInt("ActiveLevelIndex", Mathf.Clamp(levelIndex - 1, 0, data.allLevelsData.Count - 1));
                 PlayerPrefs.Save();
-                //DOTween.KillAll();
+                DOTween.KillAll();
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             }
             
@@ -160,7 +145,7 @@ namespace __Game.Scripts
                 levelIndex = PlayerPrefs.GetInt("ActiveLevelIndex");
                 PlayerPrefs.SetInt("ActiveLevelIndex", Mathf.Clamp(levelIndex + 1, 0, data.allLevelsData.Count - 1));
                 PlayerPrefs.Save();
-                //DOTween.KillAll();
+                DOTween.KillAll();
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             }
         }

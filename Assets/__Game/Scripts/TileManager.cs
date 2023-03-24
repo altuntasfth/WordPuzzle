@@ -14,6 +14,7 @@ namespace __Game.Scripts
         
         [SerializeField] private GameObject tilePrefab;
         public List<TileEntity> tiles;
+        public List<TileEntity> initialTileList;
 
         public void SetupTiles()
         {
@@ -22,6 +23,8 @@ namespace __Game.Scripts
             GenerateTiles();
             SetChildrenAndParentTiles();
             SetTilesVisibility();
+
+            initialTileList = tiles;
         }
 
         private void GenerateTiles()
@@ -84,11 +87,6 @@ namespace __Game.Scripts
             {
                 TileEntity completedTile = wordGridManager.wordGrids[i].tile;
                 tiles.Remove(completedTile);
-                
-                for (var j = 0; j < completedTile.childrenTiles.Count; j++)
-                {
-                    completedTile.childrenTiles[j].parentTiles.Remove(completedTile);
-                }
             }
         }
 
@@ -105,7 +103,9 @@ namespace __Game.Scripts
                     wordGridEntity.tile = tile;
                     wordGridEntity.GetComponent<Image>().color = tile.visibleColor;
                     wordGridEntity.letterTMP.text = tile.tileData.character;
-                    tile.gameObject.SetActive(false);
+                    
+                    
+                    tile.Move();
                     
                     gameManager.SetUndoButtonActivate(true);
                     gameManager.SetSubmitButtonActivate();

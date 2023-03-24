@@ -12,7 +12,7 @@ namespace __Game.Scripts
 
         [Tooltip("Hold duration in seconds")]
         [Range(0.3f, 5f)] public float holdDuration = 0.5f;
-        public UnityEvent onLongPress;
+        public event Action<bool> onLongPress;
 
         private bool isPointerDown = false;
         private bool isLongPressed = false;
@@ -47,7 +47,7 @@ namespace __Game.Scripts
                 if (elapsedSeconds >= holdDuration) {
                     isLongPressed = true;
                     if (button.interactable)
-                        onLongPress?.Invoke();
+                        onLongPress?.Invoke(true);
 
                     yield break;
                 }

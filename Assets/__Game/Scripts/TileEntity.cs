@@ -29,7 +29,24 @@ namespace __Game.Scripts
 
         public void Move()
         {
+            for (var i = 0; i < childrenTiles.Count; i++)
+            {
+                childrenTiles[i].parentTiles.Remove(this);
+                childrenTiles[i].SetVisibility();
+            }
             
+            gameObject.SetActive(false);
+        }
+
+        public void UndoMove()
+        {
+            for (var i = 0; i < childrenTiles.Count; i++)
+            {
+                childrenTiles[i].parentTiles.Add(this);
+                childrenTiles[i].SetVisibility();
+            }
+            
+            gameObject.SetActive(true);
         }
     }
 }
