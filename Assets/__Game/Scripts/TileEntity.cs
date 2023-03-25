@@ -6,6 +6,7 @@ namespace __Game.Scripts
 {
     public class TileEntity : MonoBehaviour
     {
+        public bool isOnWordGrid;
         public int value;
         public TileData tileData;
         public List<TileEntity> childrenTiles;
@@ -35,7 +36,8 @@ namespace __Game.Scripts
                 childrenTiles[i].parentTiles.Remove(this);
                 childrenTiles[i].SetVisibility();
             }
-            
+
+            isOnWordGrid = true;
             gameObject.SetActive(false);
         }
 
@@ -46,7 +48,8 @@ namespace __Game.Scripts
                 childrenTiles[i].parentTiles.Add(this);
                 childrenTiles[i].SetVisibility();
             }
-            
+
+            isOnWordGrid = false;
             gameObject.SetActive(true);
         }
     }

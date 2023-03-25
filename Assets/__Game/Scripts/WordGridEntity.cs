@@ -14,6 +14,10 @@ namespace __Game.Scripts
         {
             letterTMP.text = "";
             GetComponent<Image>().color = initialColor;
+            if (tile != null)
+            {
+                tile.isOnWordGrid = false;
+            }
             tile = null;
         }
     }

@@ -74,7 +74,11 @@ namespace __Game.Scripts
                 wordSearchManager.WriteCompletedWord();
                 wordSearchManager.ResetWordGrids();
                 
+                wordSearchManager.DebugPossibleWords();
+                
                 SetSubmitButtonActivate();
+                
+                HandleLevelComplete();
             });
             
             undoButton.onClick.AddListener(() =>
@@ -140,22 +144,36 @@ namespace __Game.Scripts
                     }
                 }
                 
+                wordSearchManager.DebugPossibleWords();
                 SetUndoButtonActivate(false);
             }
         }
-        
-        private void SaveCompletedLevelData()
+
+        public void HandleLevelComplete()
         {
-            if (levelData.levelUIData.highScore > totalScore)
+            if (wordSearchManager.possibleWordList.Count > 0)
             {
                 return;
             }
             
-            highScoreTMP.text = "HIGH SCORE\n" + totalScore.ToString();
-            gameplayScreen.SetActive(false);
-            tileManager.gameObject.SetActive(false);
-            celebrationScreen.SetActive(true);
+            if (totalScore > levelData.levelUIData.highScore)
+            {
+                highScoreTMP.text = "HIGH SCORE\n" + totalScore.ToString();
+                gameplayScreen.SetActive(false);
+                tileManager.gameObject.SetActive(false);
+                celebrationScreen.SetActive(true);
+                
+                SaveCompletedLevelData();
+            }
+
+            SetReadyToPlayNextLevel();
             
+            DOTween.KillAll();
+            DOVirtual.DelayedCall(1f, () => SceneManager.LoadScene("MenuScene"));
+        }
+        
+        private void SaveCompletedLevelData()
+        {
             levelData.levelUIData.highScore = totalScore;
             LevelSaveLoadManager.Instance.Save(data, levelData, levelIndex);
         }
@@ -195,11 +213,7 @@ namespace __Game.Scripts
 
             if (Input.GetKeyDown(KeyCode.S))
             {
-                SaveCompletedLevelData();
-                SetReadyToPlayNextLevel();
-
-                DOTween.KillAll();
-                DOVirtual.DelayedCall(2f, () => SceneManager.LoadScene("MenuScene"));
+                HandleLevelComplete();
             }
         }
     }

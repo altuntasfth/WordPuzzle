@@ -31,6 +31,8 @@ namespace __Game.Scripts
         
         private Dictionary<string, int> lettersWithValues = new Dictionary<string, int>();
 
+        public string[] visibleLetters;
+
         public void SetupTiles()
         {
             tiles = new List<TileEntity>();
@@ -39,6 +41,8 @@ namespace __Game.Scripts
             GenerateTiles();
             SetChildrenAndParentTiles();
             SetTilesVisibility();
+
+            GetVisibleLetters();
         }
 
         private void GenerateTiles()
@@ -97,19 +101,32 @@ namespace __Game.Scripts
             }
         }
 
-        public List<TileEntity> NonBlockedTiles()
+        private List<TileEntity> GetVisibleTiles()
         {
-            List<TileEntity> nonBlockedTiles = new List<TileEntity>();
+            List<TileEntity> visibleTiles = new List<TileEntity>();
 
             for (int i = 0; i < tiles.Count; i++)
             {
-                if (tiles[i].parentTiles.Count == 0)
+                if (tiles[i].parentTiles.Count == 0 && tiles[i].gameObject.activeInHierarchy)
                 {
-                    nonBlockedTiles.Add(tiles[i]);
+                    visibleTiles.Add(tiles[i]);
                 }
             }
+
+            return visibleTiles;
+        }
+
+        public string[] GetVisibleLetters()
+        {
+            List<TileEntity> visibleTiles = GetVisibleTiles();
+            visibleLetters = new string [visibleTiles.Count];
             
-            return nonBlockedTiles;
+            for (int i = 0; i < visibleTiles.Count; i++)
+            {
+                visibleLetters[i] = visibleTiles[i].tileData.character;
+            }
+
+            return visibleLetters;
         }
 
         private void SetChildrenAndParentTiles()
@@ -156,7 +173,6 @@ namespace __Game.Scripts
                     wordGridEntity.tile = tile;
                     wordGridEntity.GetComponent<Image>().color = tile.visibleColor;
                     wordGridEntity.letterTMP.text = tile.tileData.character;
-                    
                     
                     tile.Move();
                     
