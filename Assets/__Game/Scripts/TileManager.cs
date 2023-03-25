@@ -116,6 +116,35 @@ namespace __Game.Scripts
             return visibleTiles;
         }
 
+        public List<TileEntity> GetSortedVisibleTilesToPossibleWord()
+        {
+            if (wordSearchManager.possibleWordList.Count == 0)
+            {
+                return null;
+            }
+            
+            List<TileEntity> visibleTiles = GetVisibleTiles();
+            List<TileEntity> possibleWordsTiles = new List<TileEntity>();
+                
+            string possibleWord = wordSearchManager.possibleWordList[0];
+            char[] possibleWordLetters = possibleWord.ToCharArray();
+                
+            for (var i = 0; i < possibleWordLetters.Length; i++)
+            {
+                for (var j = 0; j < visibleTiles.Count; j++)
+                {
+                    if (possibleWordLetters[i].ToString() == visibleTiles[j].tileData.character)
+                    {
+                        possibleWordsTiles.Add(visibleTiles[j]);
+                        visibleTiles.Remove(visibleTiles[j]);
+                        break;
+                    }
+                }
+            }
+
+            return possibleWordsTiles;
+        }
+
         public string[] GetVisibleLetters()
         {
             List<TileEntity> visibleTiles = GetVisibleTiles();

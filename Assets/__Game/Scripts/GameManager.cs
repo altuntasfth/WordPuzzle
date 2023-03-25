@@ -1,4 +1,7 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -15,6 +18,7 @@ namespace __Game.Scripts
         public bool isGameStarted;
         public bool isGameOver;
         public int totalScore;
+        public List<TileEntity> possibleWordsTiles;
         [SerializeField] private LevelData levelData;
         
         [Space(10)] [Header("Managers")]
@@ -32,11 +36,13 @@ namespace __Game.Scripts
         [SerializeField] private GameObject gameplayScreen;
         [SerializeField] private Button submitButton;
         [SerializeField] private Button undoButton;
+        public Button autoSolveButton;
         
         private AllLevelsData data;
         private int levelIndex;
         public bool isUndoActive;
-
+        public float screenDuration = 4f;
+        
         private void OnEnable()
         {
             playerManager.MoveTile += tileManager.OnTileMove;
@@ -75,7 +81,8 @@ namespace __Game.Scripts
                 wordSearchManager.ResetWordGrids();
                 
                 wordSearchManager.DebugPossibleWords();
-                
+                possibleWordsTiles = tileManager.GetSortedVisibleTilesToPossibleWord();
+
                 SetSubmitButtonActivate();
                 
                 HandleLevelComplete();
@@ -85,6 +92,14 @@ namespace __Game.Scripts
             {
                 UndoMove(false);
                 SetSubmitButtonActivate();
+            });
+            
+            autoSolveButton.onClick.AddListener(() =>
+            {
+                wordSearchManager.DebugPossibleWords();
+                playerManager.enabled = false;
+
+                AutoSolve();
             });
 
             isGameStarted = true;
@@ -149,6 +164,25 @@ namespace __Game.Scripts
             }
         }
 
+        private void AutoSolve()
+        {
+            possibleWordsTiles = tileManager.GetSortedVisibleTilesToPossibleWord();
+            
+            if (possibleWordsTiles == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < possibleWordsTiles.Count; i++)
+            {
+                tileManager.OnTileMove(possibleWordsTiles[i]);
+            }
+                
+            submitButton.onClick?.Invoke();
+
+            AutoSolve();
+        }
+
         public void HandleLevelComplete()
         {
             if (wordSearchManager.possibleWordList.Count > 0)
@@ -156,20 +190,26 @@ namespace __Game.Scripts
                 return;
             }
             
+            DOTween.KillAll();
+            
+            totalScore -= tileManager.tiles.Count * 100;
+            scoreTMP.text = "Score: " + totalScore.ToString();
+            
             if (totalScore > levelData.levelUIData.highScore)
             {
-                highScoreTMP.text = "HIGH SCORE\n" + totalScore.ToString();
-                gameplayScreen.SetActive(false);
-                tileManager.gameObject.SetActive(false);
-                celebrationScreen.SetActive(true);
-                
+                DOVirtual.DelayedCall(screenDuration - 1f, () =>
+                {
+                    highScoreTMP.text = "HIGH SCORE\n" + totalScore.ToString();
+                    gameplayScreen.SetActive(false);
+                    tileManager.gameObject.SetActive(false);
+                    celebrationScreen.SetActive(true);
+                });
+
                 SaveCompletedLevelData();
             }
 
             SetReadyToPlayNextLevel();
-            
-            DOTween.KillAll();
-            DOVirtual.DelayedCall(1f, () => SceneManager.LoadScene("MenuScene"));
+            DOVirtual.DelayedCall(screenDuration, () => SceneManager.LoadScene("MenuScene"));
         }
         
         private void SaveCompletedLevelData()

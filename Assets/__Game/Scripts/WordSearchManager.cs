@@ -12,6 +12,7 @@ namespace __Game.Scripts
     public class WordSearchManager : MonoBehaviour
     {
         public TileManager tileManager;
+        public GameManager gameManager;
         public TextMeshProUGUI completedWordsTMP;
         public List<WordGridEntity> wordGrids;
         public List<string> completedWords;
@@ -42,6 +43,8 @@ namespace __Game.Scripts
                     }
                     
                     DebugPossibleWords();
+                    gameManager.possibleWordsTiles = tileManager.GetSortedVisibleTilesToPossibleWord();
+
                 }
                 else
                 {

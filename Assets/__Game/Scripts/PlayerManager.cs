@@ -29,6 +29,8 @@ namespace __Game.Scripts
             {
                 return;
             }
+            
+            gameManager.autoSolveButton.gameObject.SetActive(false);
 
             RaycastHit hit;
             Vector3 screenToWorldPoint = gameManager.mainCamera.
